@@ -1,25 +1,31 @@
 <template>
-  <div id="app">
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
-    <TabBar></TabBar>
-    
-  </div>
+    <div>
+        <Header title="喵喵电影"></Header>
+         <div id="content">
+            <div class="movie_menu">
+                <router-link tag='div' class="city_name" to="/movie/city">
+                    <span>大连</span><i class="iconfont icon-lower-triangle"></i>
+                </router-link>
+                <div class="hot_swtich">
+                    <router-link tag='div' to='/movie/nowplaying' class="hot_item">正在热映</router-link>
+                    <router-link tag="div" to='/movie/comingsoon' class="hot_item ">即将上映</router-link>
+                </div>
+                <router-link tag='div' to="/movie/search" class="search_entry">
+                    <i class="iconfont icon-sousuo"></i>
+                </router-link>
+            </div>
+         </div>
+        <keep-alive>
+             <router-view></router-view>
+        </keep-alive>
+    </div>
 </template>
 <script>
-import TabBar from './components/TabBar';
+import Header from '@/components/Header'
 export default {
- components:{
-   TabBar
- },
- mounted(){
-   console.log(['1','2','3'].map(parseInt));
-   var a=1;
-   if(a++==1&&a++==2&&a==3){
-     console.log(1)
-   }
- }
+    components:{
+        Header
+    }
 }
 </script>
 <style lang="scss">
@@ -34,5 +40,5 @@ export default {
 .movie_menu .search_entry{ margin-right:20px; height:100%; line-height: 45px;}
 .movie_menu .search_entry.active{ color: #ef4238; border-bottom: 2px #ef4238 solid;}
 .movie_menu .search_entry.router-link-active{ color: #ef4238; border-bottom: 2px #ef4238 solid;}
-.movie_menu .search_entry i{  font-size:24px; color:red;}
+.movie_menu .search_entry i{  font-size:24px; color:red;}    
 </style>
