@@ -1,94 +1,103 @@
 <template>
-    			<div class="city_body">
-				<div class="city_list">
-					<div class="city_hot">
-						<h2>热门城市</h2>
-						<ul class="clearfix">
-							<li>上海</li>
-							<li>北京</li>
-							<li>上海</li>
-							<li>北京</li>
-							<li>上海</li>
-							<li>北京</li>
-							<li>上海</li>
-							<li>北京</li>
-						</ul>
-					</div>
-					<div class="city_sort">
-						<div>
-							<h2>A</h2>
-							<ul>
-								<li>阿拉善盟</li>
-								<li>鞍山</li>
-								<li>安庆</li>
-								<li>安阳</li>
-							</ul>
-						</div>
-						<div>
-							<h2>B</h2>
-							<ul>
-								<li>北京</li>
-								<li>保定</li>
-								<li>蚌埠</li>
-								<li>包头</li>
-							</ul>
-						</div>
-						<div>
-							<h2>A</h2>
-							<ul>
-								<li>阿拉善盟</li>
-								<li>鞍山</li>
-								<li>安庆</li>
-								<li>安阳</li>
-							</ul>
-						</div>
-						<div>
-							<h2>B</h2>
-							<ul>
-								<li>北京</li>
-								<li>保定</li>
-								<li>蚌埠</li>
-								<li>包头</li>
-							</ul>
-						</div>
-						<div>
-							<h2>A</h2>
-							<ul>
-								<li>阿拉善盟</li>
-								<li>鞍山</li>
-								<li>安庆</li>
-								<li>安阳</li>
-							</ul>
-						</div>
-						<div>
-							<h2>B</h2>
-							<ul>
-								<li>北京</li>
-								<li>保定</li>
-								<li>蚌埠</li>
-								<li>包头</li>
-							</ul>
-						</div>	
-					</div>
-				</div>
-				<div class="city_index">
-					<ul>
-						<li>A</li>
-						<li>B</li>
-						<li>C</li>
-						<li>D</li>
-						<li>E</li>
+    <div class="city_body">
+			<div class="city_list" ref="city_list">
+				<div class="city_hot">
+					<h2>热门城市</h2>
+					<ul class="clearfix">
+						<li v-for="item in hostList" :key="item.id">
+							{{item.nm}}
+						</li>
 					</ul>
 				</div>
+				<div class="city_sort" ref="city_sort">
+					<div v-for="item in cityList" :key="item.index">
+						<h2>{{item.index}}</h2>
+						<ul>
+							<li v-for="itemList in item.list" :key="itemList.id">{{itemList.nm}}</li>
+						</ul>
+					</div>
+				</div>
 			</div>
+			<div class="city_index">
+				<ul>
+					<li v-for="(item,index) in cityList" :key="item.index" v-on:touchstart="handleToIndex(index)">{{item.index}}</li>
+				</ul>
+			</div>
+	</div>
 </template>
 <script>
 export default {
-    
+	data(){
+		return{
+			cityList:[],
+			hostList:[]
+		}
+	},
+    mounted(){
+		this.axios.get('/api/cityList').then((res)=>{
+			if(res.status===200){
+				var data=res.data.data.cities;
+				var {cityList,hostList}=this.formatcityList(data);
+				this.cityList=cityList;
+				this.hostList=hostList;
+			}
+		})
+	},
+	methods:{
+
+		formatcityList(data){
+			let cityList=[];
+			let hostList=[];
+
+			// 热门城市
+			for(var i=0;i<data.length;i++){
+				if(data[i].isHot===1){
+					hostList.push(data[i])
+				}
+			}
+			for(var i=0;i<data.length;i++){
+				var firstLetter=data[i].py.substring(0,1).toUpperCase();
+				if(toCom(firstLetter)){
+					cityList.push({index:firstLetter,list:[{nm:data[i].nm,id:data[i].id}]})
+				}else{
+					 for(var j=0;j<cityList.length;j++){
+						 if(cityList[j].index===firstLetter){
+							 cityList[j].list.push({nm:data[i].nm,id:data[i].id});
+						 }
+					 }
+				}
+			}
+			// 排序
+			cityList.sort((n1,n2)=>{
+				if(n1.index>n2.index){
+					return 1;
+				}else if(n1.index<n2.index){
+					return -1;
+				}else{
+					return 0;
+				}
+			})
+			function toCom(firstLetter){
+				for(var i=0;i<cityList.length;i++){
+					if(cityList[i].index===firstLetter){
+						return false;
+					}
+				}
+				return true;
+
+			}
+			return {cityList,hostList};
+		},
+		handleToIndex(index){
+			var h2=this.$refs.city_sort.getElementsByTagName('h2');
+			this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+		}
+		
+	}
 }
 </script>
 <style lang="scss">
-#content .city_body{ margin-top: 45px; display: flex; width:100%; position: absolute; top: 0; bottom: 0;}
+.city_body{ margin-top:97px; display: flex; width:100%; position: absolute; top: 0; bottom: 0;}
 .city_body .city_list{ flex:1; overflow: auto; background: #FFF5F0;}
 .city_body .city_list::-webkit-scrollbar{background-color:transparent;width:0;}
 .city_body .city_hot{ margin-top: 20px;}
