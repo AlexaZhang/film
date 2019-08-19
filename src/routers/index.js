@@ -7,11 +7,13 @@ const City=()=>import('../components/City');
 const ComingSoon=()=>import('../components/ComingSoon');
 const Search=()=>import('../components/Search');
 const NowPlaying=()=>import('../components/NowPlaying');
+const detail=()=>import('../views/Movie/detail.vue');
 
 Vue.use(Router)
 
 export default new Router({
   mode:'history',
+  base:'miaomiao',
   routes: [
     {
       path: '/chinema',
@@ -39,6 +41,26 @@ export default new Router({
         {
           path:'search',
           component:Search
+        },
+        {
+          path:'detail/1/:id',
+          components:{
+            default:NowPlaying,
+            detail:detail
+          },
+          props:{
+            detail:true
+          }
+        },
+        {
+          path:'detail/2/:id',
+          components:{
+            default:ComingSoon,
+            detail:detail
+          },
+          props:{
+            detail:true
+          }
         },
         {
           path:'nowplaying',

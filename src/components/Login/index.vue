@@ -13,11 +13,15 @@
             <a href="#">立即注册</a>
             <a href="#">找回密码</a>
         </div>
+        <TabBar />
     </div>
 </template>
 <script>
+import TabBar from '@/components/TabBar'
 export default {
-    
+    components:{
+        TabBar
+    }
 }
 </script>
 <style lang="scss">

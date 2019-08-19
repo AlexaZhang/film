@@ -1,37 +1,43 @@
-<template>
-    		<div id="content">
-			
-			<div class="cinema_body">
-				<ul>
-					<li v-for=" item in cinemaList" :key="item.id">
-						<div>
-							<span>{{item.nm}}</span>
-							<span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
-						</div>
-						<div class="address">
-							<span>{{item.addr}}</span>
-							<span>{{item.distance}}</span>
-						</div>
-						<div class="card">
-							<div v-for="(itemCard,key) in item.tag" v-if="itemCard===1" :key="key" :class="key|classCard">{{key |formatCard}}</div>
-       					</div>
-					</li>
-				</ul>
-			</div>
-		</div>
+<template>		
+	<div class="cinema_body">
+		<Loading v-if="isLoading" />
+		<Scroller v-else>
+		<ul>
+			<li v-for=" item in cinemaList" :key="item.id">
+				<div>
+					<span>{{item.nm}}</span>
+					<span class="q"><span class="price">{{item.sellPrice}}</span> 元起</span>
+				</div>
+				<div class="address">
+					<span>{{item.addr}}</span>
+					<span>{{item.distance}}</span>
+				</div>
+				<div class="card">
+					<div v-for="(itemCard,key) in item.tag" v-if="itemCard===1" :key="key" :class="key|classCard">{{key |formatCard}}</div>
+				</div>
+			</li>
+		</ul>
+		</Scroller>
+	</div>
 </template>
 <script>
 export default {
     data(){
 		return {
-			cinemaList:[]
+			cinemaList:[],
+			isLoading:true,
+			prevCityId:-1
 		}
 	},
-	mounted(){
-		this.axios.get('/api/cinemaList?cityId=10').then((res)=>{
+	activated(){
+		let cityId=this.$store.state.city.id;
+        if(this.prevCityId===cityId){return;}
+		this.axios.get('/api/cinemaList?cityId='+cityId).then((res)=>{
 			console.log(res);
 			if(res.status===200){
 				this.cinemaList=res.data.data.cinemas;
+				this.isLoading=false;
+				this.prevCityId=cityId
 			}
 		})
 	},
@@ -66,8 +72,8 @@ export default {
 	}
 }
 </script>
-<style lang="scss">
- #content .cinema_body{ flex:1; overflow:auto;}
+<style lang="scss" scoped>
+#content .cinema_body{ flex:1; overflow:auto;}
 .cinema_body ul{ padding:20px;}
 .cinema_body li{  border-bottom:1px solid #e6e6e6; margin-bottom: 20px;}
 .cinema_body div{ margin-bottom: 10px;}

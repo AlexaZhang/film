@@ -1,22 +1,29 @@
 <template>
+ 
     <div class="city_body">
-			<div class="city_list" ref="city_list">
-				<div class="city_hot">
-					<h2>热门城市</h2>
-					<ul class="clearfix">
-						<li v-for="item in hostList" :key="item.id">
-							{{item.nm}}
-						</li>
-					</ul>
-				</div>
-				<div class="city_sort" ref="city_sort">
-					<div v-for="item in cityList" :key="item.index">
-						<h2>{{item.index}}</h2>
-						<ul>
-							<li v-for="itemList in item.list" :key="itemList.id">{{itemList.nm}}</li>
+
+			<div class="city_list" >
+				<Loading v-if="isLoading" />
+				<Scroller ref="city_list" v-else>
+				<div>
+					<div class="city_hot">
+						<h2>热门城市</h2>
+						<ul class="clearfix">
+							<li v-for="item in hostList" :key="item.id" @tap='handleToCity(item.nm,item.id)'>
+								{{item.nm}}
+							</li>
 						</ul>
 					</div>
+					<div class="city_sort" ref="city_sort">
+						<div v-for="item in cityList" :key="item.index">
+							<h2>{{item.index}}</h2>
+							<ul>
+								<li v-for="itemList in item.list" :key="itemList.id"  @tap='handleToCity(itemList.nm,itemList.id)'>{{itemList.nm}}</li>
+							</ul>
+						</div>
+					</div>
 				</div>
+				</Scroller>
 			</div>
 			<div class="city_index">
 				<ul>
@@ -24,24 +31,38 @@
 				</ul>
 			</div>
 	</div>
+  
 </template>
 <script>
 export default {
 	data(){
 		return{
 			cityList:[],
-			hostList:[]
+			hostList:[],
+			isLoading:true
 		}
 	},
     mounted(){
-		this.axios.get('/api/cityList').then((res)=>{
-			if(res.status===200){
-				var data=res.data.data.cities;
-				var {cityList,hostList}=this.formatcityList(data);
-				this.cityList=cityList;
-				this.hostList=hostList;
-			}
-		})
+		var cityList=window.localStorage.getItem('cityList');
+		var hostList=window.localStorage.getItem('hostList');
+		if(cityList && hostList){
+			this.cityList=JSON.parse(cityList)
+			this.hostList=JSON.parse(hostList)
+			this.isLoading=false;
+		}else{
+			this.axios.get('/api/cityList').then((res)=>{
+				if(res.status===200){
+					var data=res.data.data.cities;
+					var {cityList,hostList}=this.formatcityList(data);
+					this.cityList=cityList;
+					this.hostList=hostList;
+					this.isLoading=false;
+					window.localStorage.setItem('cityList',JSON.stringify(cityList));
+					window.localStorage.setItem('hostList',JSON.stringify(hostList));
+
+				}
+			})
+		}
 	},
 	methods:{
 
@@ -90,13 +111,20 @@ export default {
 		},
 		handleToIndex(index){
 			var h2=this.$refs.city_sort.getElementsByTagName('h2');
-			this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+			// this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop;
+			this.$refs.city_list.toScrollTop(-h2[index].offsetTop)
+		},
+		handleToCity(nm,id){
+			this.$store.commit('city/CITY_INFO',{nm,id});
+			window.localStorage.setItem('nowNm',nm);
+			window.localStorage.setItem('nowId',id);
+			this.$router.push('/movie/nowplaying')
 		}
 		
 	}
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .city_body{ margin-top:97px; display: flex; width:100%; position: absolute; top: 0; bottom: 0;}
 .city_body .city_list{ flex:1; overflow: auto; background: #FFF5F0;}
 .city_body .city_list::-webkit-scrollbar{background-color:transparent;width:0;}
