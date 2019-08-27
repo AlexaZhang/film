@@ -1,16 +1,17 @@
 <template>
     <div>
         <Header title="喵喵登陆"></Header>
-       <Login></Login>
+         <router-view></router-view>
+         <TabBar />
     </div>
 </template>
 <script>
 import Header from '@/components/Header'
-import Login from '@/components/Login'
+import TabBar from '@/components/TabBar'
 export default {
   components:{
-    Login,
-    Header
+    Header,
+    TabBar
   }
 }
 </script>

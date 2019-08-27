@@ -30,6 +30,7 @@ export default {
         TabBar,
         CiList
     }
+    
 }
 </script>
 

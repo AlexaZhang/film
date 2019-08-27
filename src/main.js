@@ -2,7 +2,10 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './routers'
 import store from './stores/store'
-import axios from 'axios'
+import axios from './config/http.js'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
 Vue.prototype.axios=axios
 Vue.filter('setWH',(url,arg)=>{
   return url.replace(/w\.h/,arg)
@@ -17,3 +20,5 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+

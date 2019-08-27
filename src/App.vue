@@ -12,6 +12,17 @@ export default {
    if(a++==1&&a++==2&&a==3){
      console.log(1)
    }
+      var foo={
+      bar:function(){
+          console.log(this)
+      }
+  }
+  	var obj={
+			token:'12312312312313131'
+		}
+	localStorage.setItem('obj',JSON.stringify(obj));
+  foo.bar();
+  (foo.bar)();
  }
 }
 </script>

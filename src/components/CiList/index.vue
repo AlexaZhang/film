@@ -30,6 +30,7 @@ export default {
 		}
 	},
 	activated(){
+	
 		let cityId=this.$store.state.city.id;
         if(this.prevCityId===cityId){return;}
 		this.axios.get('/api/cinemaList?cityId='+cityId).then((res)=>{
